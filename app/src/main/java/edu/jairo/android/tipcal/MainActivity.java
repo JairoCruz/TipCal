@@ -8,9 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -19,8 +21,6 @@ import butterknife.OnClick;
 public class MainActivity extends AppCompatActivity {
 
     // Para poder utilizar el plugin de ButterKnife es necesario seleccionar el elemento R.layout.activity_main, luego alt + insert
-    @Bind(R.id.inputBill)
-    EditText inputBill;
     @Bind(R.id.btnSubmit)
     Button btnSubmit;
     @Bind(R.id.inputPercentage)
@@ -31,10 +31,14 @@ public class MainActivity extends AppCompatActivity {
     Button btnDecrease;
     @Bind(R.id.btnClear)
     Button btnClear;
-
+    @Bind(R.id.inputBill)
+    EditText inputBill;
+    @Bind(R.id.txtTip)
+    TextView txtTip;
 
     private final static int TIP_STEP_CHANGE = 1;
     private final static int DEFAULT_TIP_PERCENTAGE = 10;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,17 +66,66 @@ public class MainActivity extends AppCompatActivity {
     // ButterKnife tambien me permite inyectar un evento click sobre un elemento button
     // con la siguiente notacion
     @OnClick(R.id.btnSubmit)
-    public void handleClickSubmit(){
+    public void handleClickSubmit() {
         Log.e(getLocalClassName(), "click en submit");
         // ButterKnife me implemeta un Listener sin necesidad que yo haga el <code></code>
         hideKeyboard();
+
+        String strInputTotal = inputBill.getText().toString().trim();
+        if (!strInputTotal.isEmpty()) {
+            double total = Double.parseDouble(strInputTotal);
+            int tipPercentage = getTipPercentage();
+            double tip = total * (tipPercentage / 100d);
+
+            String strTip = String.format(getString(R.string.global_message_tip), tip);
+            txtTip.setVisibility(View.VISIBLE);
+            txtTip.setText(strTip);
+
+        }
+    }
+
+    // Anotacion Onclick para button incrementar
+    @OnClick(R.id.btnIncrease)
+    public void handleClickIncrease(){
+        // Esto oculta el teclado por si el usuario no quiere seguir ingresando datos, esto no se muestra en emulador
+        hideKeyboard();
+        handleTipChange(TIP_STEP_CHANGE);
+    }
+
+    // Anotacion Onclick para button decrementar
+    @OnClick(R.id.btnDecrease)
+    public void handleClickDecrease(){
+        // Esto oculta el teclado por si el usuario no quiere seguir ingresando datos, esto no se muestra en emulador
+        hideKeyboard();
+        handleTipChange(-TIP_STEP_CHANGE);
+    }
+
+
+    private void handleTipChange(int change){
+
+        int tipPercentage = getTipPercentage();
+        tipPercentage += change;
+        if (tipPercentage > 0){
+            inputPercentage.setText(String.valueOf(tipPercentage));
+        }
+    }
+
+    private int getTipPercentage() {
+        int tipPercentage = DEFAULT_TIP_PERCENTAGE;
+        String strInputTipPercentage = inputPercentage.getText().toString().trim();
+        if (!strInputTipPercentage.isEmpty()){
+            tipPercentage = Integer.parseInt(strInputTipPercentage);
+        }else{
+            inputPercentage.setText(String.valueOf(tipPercentage));
+        }
+        return tipPercentage;
     }
 
     private void hideKeyboard() {
         InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         try {
             inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }catch (NullPointerException npe){
+        } catch (NullPointerException npe) {
             Log.e(getLocalClassName(), Log.getStackTraceString(npe));
         }
     }
