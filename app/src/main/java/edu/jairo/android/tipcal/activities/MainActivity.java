@@ -1,4 +1,4 @@
-package edu.jairo.android.tipcal;
+package edu.jairo.android.tipcal.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +17,10 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import edu.jairo.android.tipcal.R;
+import edu.jairo.android.tipcal.TipCalcApp;
+import edu.jairo.android.tipcal.fragments.TipHistoryListFragment;
+import edu.jairo.android.tipcal.fragments.TipHistoryListFragmentListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.txtTip)
     TextView txtTip;
 
+    private TipHistoryListFragmentListener fragmentListener;
+
     private final static int TIP_STEP_CHANGE = 1;
     private final static int DEFAULT_TIP_PERCENTAGE = 10;
 
@@ -46,6 +52,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // Con esto hago una inyeccion de todos los componentes que utilizo
         ButterKnife.bind(this);
+
+
+        // Instanceamos el fragment
+        TipHistoryListFragment fragment = (TipHistoryListFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentList);
+        // Para que guarde la instancia
+        fragment.setRetainInstance(true);
+
+        fragmentListener = (TipHistoryListFragmentListener)fragment;
     }
 
     @Override
@@ -78,6 +92,9 @@ public class MainActivity extends AppCompatActivity {
             double tip = total * (tipPercentage / 100d);
 
             String strTip = String.format(getString(R.string.global_message_tip), tip);
+
+            // Enviamos datos al fragmento
+            fragmentListener.action(strTip);
             txtTip.setVisibility(View.VISIBLE);
             txtTip.setText(strTip);
 
