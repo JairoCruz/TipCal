@@ -1,6 +1,7 @@
 package edu.jairo.android.tipcal.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import edu.jairo.android.tipcal.R;
+import edu.jairo.android.tipcal.activities.TipDetailActivity;
 import edu.jairo.android.tipcal.adapters.OnItemClickListener;
 import edu.jairo.android.tipcal.adapters.TipAdapter;
 import edu.jairo.android.tipcal.models.TipRecord;
@@ -76,6 +78,10 @@ public class TipHistoryListFragment extends Fragment implements TipHistoryListFr
 
     @Override
     public void onItemClick(TipRecord tipRecord) {
-        Toast.makeText(getActivity(),tipRecord.getDateFormatted(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getActivity(), TipDetailActivity.class);
+        intent.putExtra(TipDetailActivity.TIP_KEY,tipRecord.getTip());
+        intent.putExtra(TipDetailActivity.BILL_TOTAL_KEY,tipRecord.getBill());
+        intent.putExtra(TipDetailActivity.DAT_KEY,tipRecord.getDateFormatted());
+        startActivity(intent);
     }
 }
