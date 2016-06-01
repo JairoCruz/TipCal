@@ -48,8 +48,10 @@ public class TipAdapter extends RecyclerView.Adapter<TipAdapter.ViewHolder> {
 
         TipRecord element = dataset.get(position);
         String strTip = String.format(context.getString(R.string.global_message_tip), element.getTip());
+        String strDate = String.format(element.getDateFormatted());
 
         holder.txtContent.setText(strTip);
+        holder.txtDataText.setText(strDate);
         holder.setOnItemClickListener(element, onItemClickListener);
 
     }
@@ -78,6 +80,8 @@ public class TipAdapter extends RecyclerView.Adapter<TipAdapter.ViewHolder> {
         // Utilizo ButterKnife
         @Bind(R.id.txtContent)
         TextView txtContent;
+        @Bind(R.id.txtDataText)
+        TextView txtDataText;
 
         public ViewHolder(View itemView) {
             super(itemView);
