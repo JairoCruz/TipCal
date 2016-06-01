@@ -3,12 +3,20 @@ package edu.jairo.android.tipcal.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import edu.jairo.android.tipcal.R;
+import edu.jairo.android.tipcal.adapters.TipAdapter;
+import edu.jairo.android.tipcal.models.TipRecord;
 
 
 /**
@@ -16,6 +24,10 @@ import edu.jairo.android.tipcal.R;
  */
 public class TipHistoryListFragment extends Fragment implements TipHistoryListFragmentListener {
 
+    @Bind(R.id.recyclerView)
+    RecyclerView recyclerView;
+
+    private TipAdapter adapter;
 
     public TipHistoryListFragment() {
         // Required empty public constructor
@@ -26,11 +38,38 @@ public class TipHistoryListFragment extends Fragment implements TipHistoryListFr
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tip_history_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_tip_history_list, container, false);
+        ButterKnife.bind(this, view);
+        initAdapter();
+        initRecyclerView();
+        return view;
+        
+
+    }
+
+
+
+    private void initAdapter() {
+
+        if(adapter == null){
+            adapter = new TipAdapter(getActivity().getApplicationContext(), new ArrayList<TipRecord>());
+        }
+    }
+
+    private void initRecyclerView() {
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+    }
+
+
+    @Override
+    public void addToList(TipRecord record) {
+        adapter.add(record);
     }
 
     @Override
-    public void action(String string) {
-        Toast.makeText(getActivity(), string, Toast.LENGTH_SHORT).show();
+    public void clearList() {
+        adapter.clear();
     }
 }

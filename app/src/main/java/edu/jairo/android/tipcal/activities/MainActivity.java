@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.Date;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -21,20 +23,14 @@ import edu.jairo.android.tipcal.R;
 import edu.jairo.android.tipcal.TipCalcApp;
 import edu.jairo.android.tipcal.fragments.TipHistoryListFragment;
 import edu.jairo.android.tipcal.fragments.TipHistoryListFragmentListener;
+import edu.jairo.android.tipcal.models.TipRecord;
 
 public class MainActivity extends AppCompatActivity {
 
     // Para poder utilizar el plugin de ButterKnife es necesario seleccionar el elemento R.layout.activity_main, luego alt + insert
-    @Bind(R.id.btnSubmit)
-    Button btnSubmit;
+
     @Bind(R.id.inputPercentage)
     EditText inputPercentage;
-    @Bind(R.id.btnIncrease)
-    Button btnIncrease;
-    @Bind(R.id.btnDecrease)
-    Button btnDecrease;
-    @Bind(R.id.btnClear)
-    Button btnClear;
     @Bind(R.id.inputBill)
     EditText inputBill;
     @Bind(R.id.txtTip)
@@ -89,12 +85,19 @@ public class MainActivity extends AppCompatActivity {
         if (!strInputTotal.isEmpty()) {
             double total = Double.parseDouble(strInputTotal);
             int tipPercentage = getTipPercentage();
-            double tip = total * (tipPercentage / 100d);
 
-            String strTip = String.format(getString(R.string.global_message_tip), tip);
+            TipRecord tipRecord = new TipRecord();
+            tipRecord.setBill(total);
+            tipRecord.setTipPercentage(tipPercentage);
+            tipRecord.setTimestamp(new Date());
+
+
+
+
+            String strTip = String.format(getString(R.string.global_message_tip), tipRecord.getTip());
 
             // Enviamos datos al fragmento
-            fragmentListener.action(strTip);
+            fragmentListener.addToList(tipRecord);
             txtTip.setVisibility(View.VISIBLE);
             txtTip.setText(strTip);
 
@@ -115,6 +118,11 @@ public class MainActivity extends AppCompatActivity {
         // Esto oculta el teclado por si el usuario no quiere seguir ingresando datos, esto no se muestra en emulador
         hideKeyboard();
         handleTipChange(-TIP_STEP_CHANGE);
+    }
+
+    @OnClick(R.id.btnClear)
+    public void handleClear(){
+        fragmentListener.clearList();
     }
 
 
